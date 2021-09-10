@@ -2,6 +2,7 @@
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const express = require('express');
+
 const logger = require('./config/logger');
 
 const app = express();
@@ -21,8 +22,8 @@ mongoose.Promise = global.Promise;
     const connectionString = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}?retryWrites=true&w=majority`;
     await mongoose.connect(connectionString);
     logger.info('MongoDB connection has been established successfully.');
-  } catch (error) {
-    logger.error(error.message);
+  } catch (err) {
+    logger.error(err.message);
     process.exit();
   }
 })();
@@ -31,6 +32,8 @@ mongoose.Promise = global.Promise;
 app.use(morgan('tiny', { stream: logger.stream }));
 
 app.use(express.json());
+
+app.use('/api/posts', require('./controllers/post/post.routes'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
