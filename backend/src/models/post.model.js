@@ -14,6 +14,11 @@ const PostSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  visibility: {
+    type: String,
+    enum: ['private', 'public'],
+    default: 'private',
+  },
 }, {
   timestamps: true,
 });

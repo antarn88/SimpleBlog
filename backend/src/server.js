@@ -33,7 +33,9 @@ app.use(morgan('tiny', { stream: logger.stream }));
 
 app.use(express.json());
 
+// Endpoints
 app.use('/api/posts', require('./controllers/post/post.routes'));
+app.use('/api/users', require('./controllers/user/user.routes'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

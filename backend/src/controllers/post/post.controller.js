@@ -30,7 +30,7 @@ exports.findOne = async (req, res, next) => {
   try {
     const post = await postService.findOne(req.params.id);
     if (!post) {
-      return next(new createError.NotFound('Post not found.'));
+      return next(new createError.NotFound('Post not found'));
     }
 
     return res.json(post);
@@ -43,7 +43,7 @@ exports.update = async (req, res, next) => {
   try {
     const post = await postService.findOne(req.params.id);
     if (!post) {
-      return next(new createError.NotFound('Post not found.'));
+      return next(new createError.NotFound('Post not found'));
     }
 
     const updatedPost = await postService.update(req.params.id, req.body);
@@ -57,7 +57,7 @@ exports.delete = async (req, res, next) => {
   try {
     const post = await postService.findOne(req.params.id);
     if (!post) {
-      return next(new createError.NotFound('Post not found.'));
+      return next(new createError.NotFound('Post not found'));
     }
 
     await postService.delete(req.params.id);
