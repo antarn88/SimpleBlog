@@ -28,7 +28,7 @@ exports.findAll = async (req, res, next) => {
 
 exports.findOne = async (req, res, next) => {
   try {
-    const user = await userService.findOne(req.params.id);
+    const user = await userService.findOne(req.params.username);
     if (!user) {
       return next(new createError.NotFound('User not found'));
     }
@@ -41,12 +41,12 @@ exports.findOne = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const user = await userService.findOne(req.params.id);
+    const user = await userService.findOne(req.params.username);
     if (!user) {
       return next(new createError.NotFound('User not found'));
     }
 
-    const updatedUser = await userService.update(req.params.id, req.body);
+    const updatedUser = await userService.update(req.params.username, req.body);
     return res.json(updatedUser);
   } catch (err) {
     return next(new createError.InternalServerError(err.message));
@@ -55,12 +55,12 @@ exports.update = async (req, res, next) => {
 
 exports.delete = async (req, res, next) => {
   try {
-    const user = await userService.findOne(req.params.id);
+    const user = await userService.findOne(req.params.username);
     if (!user) {
       return next(new createError.NotFound('User not found'));
     }
 
-    await userService.delete(req.params.id);
+    await userService.delete(req.params.username);
     return res.json({});
   } catch (err) {
     return next(new createError.InternalServerError(err.message));

@@ -6,6 +6,6 @@ exports.create = (userData) => {
 };
 
 exports.findAll = () => User.find();
-exports.findOne = (id) => User.findById(id);
-exports.update = (id, updatedData) => User.findByIdAndUpdate(id, updatedData, { new: true });
-exports.delete = (id) => User.findByIdAndRemove(id);
+exports.findOne = (username) => User.findOne({ username });
+exports.update = (username, updatedData) => User.findOneAndUpdate({ username }, updatedData, { new: true });
+exports.delete = (username) => User.findOneAndDelete({ username });

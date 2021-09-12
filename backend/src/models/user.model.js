@@ -4,6 +4,7 @@ const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
+    immutable: true,
     unique: true,
   },
   email: {
@@ -19,6 +20,7 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Blog',
     required: false,
+    immutable: true,
   },
   role: {
     type: String,
@@ -27,6 +29,7 @@ const UserSchema = new mongoose.Schema({
   },
 }, {
   timestamps: true,
+  versionKey: false,
 });
 
 UserSchema.plugin(require('mongoose-bcrypt'));
