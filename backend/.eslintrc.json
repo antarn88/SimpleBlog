@@ -16,6 +16,14 @@
             {
                 "code": 130
             }
+        ],
+        "no-underscore-dangle": [
+            "error",
+            {
+                "allow": [
+                    "_id"
+                ]
+            }
         ]
     }
 }

@@ -1,7 +1,9 @@
 const createError = require('http-errors');
 
 const Post = require('../../models/post.model');
+
 const postService = require('./post.service');
+const blogService = require('../blog/blog.service');
 
 exports.create = async (req, res, next) => {
   const validationErrors = new Post(req.body).validateSync();
@@ -11,6 +13,7 @@ exports.create = async (req, res, next) => {
 
   try {
     const newPostFromDatabase = await postService.create(req.body);
+    await blogService.addPost(newPostFromDatabase.author.username, newPostFromDatabase._id);
     return res.status(201).json(newPostFromDatabase);
   } catch (err) {
     return next(new createError.InternalServerError(err.message));
@@ -61,6 +64,7 @@ exports.delete = async (req, res, next) => {
     }
 
     await postService.delete(req.params.id);
+    await blogService.deletePost(post.author.username, req.params.id);
     return res.json({});
   } catch (err) {
     return next(new createError.InternalServerError(err.message));

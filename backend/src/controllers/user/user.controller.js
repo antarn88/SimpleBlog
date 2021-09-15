@@ -1,7 +1,10 @@
 const createError = require('http-errors');
 
 const User = require('../../models/user.model');
+
 const userService = require('./user.service');
+const blogService = require('../blog/blog.service');
+const postService = require('../post/post.service');
 
 exports.create = async (req, res, next) => {
   const validationErrors = new User(req.body).validateSync();
@@ -11,6 +14,7 @@ exports.create = async (req, res, next) => {
 
   try {
     const newUserFromDatabase = await userService.create(req.body);
+    await blogService.create({ owner: newUserFromDatabase._id });
     return res.status(201).json(newUserFromDatabase);
   } catch (err) {
     return next(new createError.InternalServerError(err.message));
@@ -60,7 +64,15 @@ exports.delete = async (req, res, next) => {
       return next(new createError.NotFound('User not found'));
     }
 
+    const blog = await blogService.findOne(req.params.username);
+
+    const deletingPosts$ = [];
+    blog.posts.forEach((post) => deletingPosts$.push(postService.delete(post._id)));
+
+    await Promise.all(deletingPosts$);
+    await blogService.delete(req.params.username);
     await userService.delete(req.params.username);
+
     return res.json({});
   } catch (err) {
     return next(new createError.InternalServerError(err.message));
