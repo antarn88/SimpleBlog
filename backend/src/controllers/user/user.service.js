@@ -7,5 +7,6 @@ exports.create = (userData) => {
 
 exports.findAll = () => User.find();
 exports.findOne = (username) => User.findOne({ username });
+exports.findOneByEmail = (email) => User.findOne({ email });
 exports.update = (username, updatedData) => User.findOneAndUpdate({ username }, updatedData, { new: true });
 exports.delete = (username) => User.findOneAndDelete({ username });

@@ -64,7 +64,7 @@ exports.delete = async (req, res, next) => {
       return next(new createError.NotFound('User not found'));
     }
 
-    const blog = await blogService.findOne(req.params.username);
+    const blog = await blogService.find(req.params.username);
 
     const deletingPosts$ = [];
     blog.posts.forEach((post) => deletingPosts$.push(postService.delete(post._id)));

@@ -5,9 +5,7 @@ exports.create = (blogData) => {
   return blog.save();
 };
 
-exports.findAll = () => Blog.find().populate(['owner', 'posts']);
-
-exports.findOne = (username) => Blog.findOne({ username }).populate(['owner', 'posts']);
+exports.find = (username) => Blog.findOne({ username }).populate(['owner', 'posts']);
 
 // ADD NEW POST TO POSTLIST
 exports.addPost = (username, postId) => Blog.findOneAndUpdate(

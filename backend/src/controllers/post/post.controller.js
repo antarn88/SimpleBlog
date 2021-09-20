@@ -4,6 +4,7 @@ const Post = require('../../models/post.model');
 
 const postService = require('./post.service');
 const blogService = require('../blog/blog.service');
+const userService = require('../user/user.service');
 
 exports.create = async (req, res, next) => {
   const validationErrors = new Post(req.body).validateSync();
@@ -20,22 +21,22 @@ exports.create = async (req, res, next) => {
   }
 };
 
-exports.findAll = async (req, res, next) => {
-  try {
-    const postList = await postService.findAll();
-    return res.json(postList);
-  } catch (err) {
-    return next(new createError.InternalServerError(err.message));
-  }
-};
-
 exports.findOne = async (req, res, next) => {
   try {
     const post = await postService.findOne(req.params.id);
     if (!post) {
       return next(new createError.NotFound('Post not found'));
     }
-
+    if (req.user === undefined) {
+      if (post.visibility === 'private') {
+        return next(new createError.Forbidden());
+      }
+    } else {
+      const user = await userService.findOneByEmail(req.user.email);
+      if (user.email !== post.author.email && post.visibility === 'private') {
+        return next(new createError.Forbidden());
+      }
+    }
     return res.json(post);
   } catch (err) {
     return next(new createError.InternalServerError(err.message));

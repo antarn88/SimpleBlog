@@ -5,7 +5,6 @@ exports.create = (postData) => {
   return post.save();
 };
 
-exports.findAll = () => Post.find();
-exports.findOne = (id) => Post.findById(id);
+exports.findOne = (id) => Post.findById(id).populate('author');
 exports.update = (id, updatedData) => Post.findByIdAndUpdate(id, updatedData, { new: true });
 exports.delete = (id) => Post.findByIdAndRemove(id);

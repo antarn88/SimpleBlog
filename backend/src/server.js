@@ -7,6 +7,10 @@ const logger = require('./config/logger');
 
 const app = express();
 
+// Authenctication.
+const authHandler = require('./auth/authHandler');
+const authenticate = require('./auth/authenticate');
+
 mongoose.Promise = global.Promise;
 
 // Connect to MongoDB database
@@ -34,9 +38,10 @@ app.use(morgan('tiny', { stream: logger.stream }));
 app.use(express.json());
 
 // Endpoints
-app.use('/api/posts', require('./controllers/post/post.routes'));
+app.post('/api/login', authHandler.login);
+app.use('/api/posts', authenticate, require('./controllers/post/post.routes'));
 app.use('/api/users', require('./controllers/user/user.routes'));
-app.use('/api/blogs', require('./controllers/blog/blog.routes'));
+app.use('/api/blogs', authenticate, require('./controllers/blog/blog.routes'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
