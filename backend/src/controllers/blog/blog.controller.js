@@ -47,9 +47,12 @@ exports.addPost = async (req, res, next) => {
       return next(new createError.NotFound('Post not found'));
     }
 
-    const updatedBlog = await blogService.addPost(req.params.username, req.params.postId);
+    if (req.user && req.user.email && post.author.email === blog.owner.email && blog.owner.email === req.user.email) {
+      const updatedBlog = await blogService.addPost(req.params.username, req.params.postId);
+      return res.json(updatedBlog);
+    }
 
-    return res.json(updatedBlog);
+    return next(new createError.Forbidden());
   } catch (err) {
     return next(new createError.InternalServerError(err.message));
   }
@@ -67,10 +70,17 @@ exports.deletePost = async (req, res, next) => {
       return next(new createError.NotFound('Post not found'));
     }
 
-    await blogService.deletePost(req.params.username, req.params.postId);
-    await postService.delete(req.params.postId);
+    if (req.user && req.user.email) {
+      const user = await userService.findOneByEmail(req.user.email);
+      if ((post.author.email === blog.owner.email && req.user.email)
+        || (user.role === 'admin' && post.visibility === 'public')) {
+        await blogService.deletePost(req.params.username, req.params.postId);
+        await postService.delete(req.params.postId);
+        return res.json({});
+      }
+    }
 
-    return res.json({});
+    return next(new createError.Unauthorized());
   } catch (err) {
     return next(new createError.InternalServerError(err.message));
   }
@@ -83,14 +93,26 @@ exports.delete = async (req, res, next) => {
       return next(new createError.NotFound('Blog not found'));
     }
 
-    const deletingPosts$ = [];
-    blog.posts.forEach((post) => deletingPosts$.push(postService.delete(post._id)));
+    if (req.user && req.user.email) {
+      const user = await userService.findOneByEmail(req.user.email);
 
-    await Promise.all(deletingPosts$);
-    await blogService.delete(req.params.username);
-    await userService.delete(req.params.username);
+      if (!user) {
+        return next(new createError.NotFound('Blog not found'));
+      }
 
-    return res.json({});
+      if (blog.owner.email === req.user.email || user.role === 'admin') {
+        const deletingPosts$ = [];
+        blog.posts.forEach((post) => deletingPosts$.push(postService.delete(post._id)));
+
+        await Promise.all(deletingPosts$);
+        await blogService.delete(req.params.username);
+        await userService.delete(req.params.username);
+
+        return res.json({});
+      }
+    }
+
+    return next(new createError.Unauthorized());
   } catch (err) {
     return next(new createError.InternalServerError(err.message));
   }

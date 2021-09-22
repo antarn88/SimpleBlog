@@ -40,7 +40,7 @@ app.use(express.json());
 // Endpoints
 app.post('/api/login', authHandler.login);
 app.use('/api/posts', authenticate, require('./controllers/post/post.routes'));
-app.use('/api/users', require('./controllers/user/user.routes'));
+app.use('/api/users', authenticate, require('./controllers/user/user.routes'));
 app.use('/api/blogs', authenticate, require('./controllers/blog/blog.routes'));
 
 // Error handling middleware
