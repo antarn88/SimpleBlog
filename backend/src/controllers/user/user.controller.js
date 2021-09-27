@@ -23,8 +23,14 @@ exports.create = async (req, res, next) => {
 
 exports.findAll = async (req, res, next) => {
   try {
-    const userList = await userService.findAll();
-    return res.json(userList);
+    if (req.user && req.user.email) {
+      const user = await userService.findOneByEmail(req.user.email);
+      if (user.role === 'admin') {
+        const userList = await userService.findAll();
+        return res.json(userList);
+      }
+    }
+    return next(new createError.Forbidden());
   } catch (err) {
     return next(new createError.InternalServerError(err.message));
   }
@@ -50,8 +56,15 @@ exports.update = async (req, res, next) => {
       return next(new createError.NotFound('User not found'));
     }
 
-    const updatedUser = await userService.update(req.params.username, req.body);
-    return res.json(updatedUser);
+    if (req.user && req.user.email) {
+      const loggedUser = await userService.findOneByEmail(req.user.email);
+      if (req.user.email === user.email || loggedUser.role === 'admin') {
+        const updatedUser = await userService.update(req.params.username, req.body);
+        return res.json(updatedUser);
+      }
+    }
+
+    return next(new createError.Unauthorized());
   } catch (err) {
     return next(new createError.InternalServerError(err.message));
   }
@@ -64,16 +77,23 @@ exports.delete = async (req, res, next) => {
       return next(new createError.NotFound('User not found'));
     }
 
-    const blog = await blogService.find(req.params.username);
+    if (req.user && req.user.email) {
+      const loggedUser = await userService.findOneByEmail(req.user.email);
+      if (req.user.email === user.email || loggedUser.role === 'admin') {
+        const blogs = await blogService.findAll();
+        const blog = blogs.filter((b) => b.owner.username === req.params.username)[0];
 
-    const deletingPosts$ = [];
-    blog.posts.forEach((post) => deletingPosts$.push(postService.delete(post._id)));
+        const deletingPosts$ = [];
+        blog.posts.forEach((post) => deletingPosts$.push(postService.delete(post._id)));
 
-    await Promise.all(deletingPosts$);
-    await blogService.delete(req.params.username);
-    await userService.delete(req.params.username);
+        await Promise.all(deletingPosts$);
+        await blogService.delete(blog._id);
+        await userService.delete(req.params.username);
 
-    return res.json({});
+        return res.json({});
+      }
+    }
+    return next(new createError.Unauthorized());
   } catch (err) {
     return next(new createError.InternalServerError(err.message));
   }

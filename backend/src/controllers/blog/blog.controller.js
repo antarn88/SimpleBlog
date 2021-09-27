@@ -20,9 +20,25 @@ exports.create = async (req, res, next) => {
   }
 };
 
+exports.findAll = async (req, res, next) => {
+  try {
+    if (req.user && req.user.email) {
+      const user = await userService.findOneByEmail(req.user.email);
+      if (user.role === 'admin') {
+        const blogs = await blogService.findAll();
+        return res.json(blogs);
+      }
+    }
+    return next(new createError.Forbidden());
+  } catch (err) {
+    return next(new createError.InternalServerError(err.message));
+  }
+};
+
 exports.findOne = async (req, res, next) => {
   try {
-    const blog = await blogService.find(req.params.username);
+    const blogs = await blogService.findAll();
+    const blog = blogs.filter((b) => b.owner.username === req.params.username)[0];
     if (!blog) {
       return next(new createError.NotFound('Blog not found'));
     }
@@ -37,7 +53,8 @@ exports.findOne = async (req, res, next) => {
 
 exports.addPost = async (req, res, next) => {
   try {
-    const blog = await blogService.find(req.params.username);
+    const blogs = await blogService.findAll();
+    const blog = blogs.filter((b) => b.owner.username === req.params.username)[0];
     if (!blog) {
       return next(new createError.NotFound('Blog not found'));
     }
@@ -48,7 +65,7 @@ exports.addPost = async (req, res, next) => {
     }
 
     if (req.user && req.user.email && post.author.email === blog.owner.email && blog.owner.email === req.user.email) {
-      const updatedBlog = await blogService.addPost(req.params.username, req.params.postId);
+      const updatedBlog = await blogService.addPost(blog._id, req.params.postId);
       return res.json(updatedBlog);
     }
 
@@ -60,7 +77,8 @@ exports.addPost = async (req, res, next) => {
 
 exports.deletePost = async (req, res, next) => {
   try {
-    const blog = await blogService.find(req.params.username);
+    const blogs = await blogService.findAll();
+    const blog = blogs.filter((b) => b.owner.username === req.params.username)[0];
     if (!blog) {
       return next(new createError.NotFound('Blog not found'));
     }
@@ -74,7 +92,7 @@ exports.deletePost = async (req, res, next) => {
       const user = await userService.findOneByEmail(req.user.email);
       if ((post.author.email === blog.owner.email && req.user.email)
         || (user.role === 'admin' && post.visibility === 'public')) {
-        await blogService.deletePost(req.params.username, req.params.postId);
+        await blogService.deletePost(blog._id, req.params.postId);
         await postService.delete(req.params.postId);
         return res.json({});
       }
@@ -88,7 +106,8 @@ exports.deletePost = async (req, res, next) => {
 
 exports.delete = async (req, res, next) => {
   try {
-    const blog = await blogService.find(req.params.username);
+    const blogs = await blogService.findAll();
+    const blog = blogs.filter((b) => b.owner.username === req.params.username)[0];
     if (!blog) {
       return next(new createError.NotFound('Blog not found'));
     }
@@ -105,7 +124,7 @@ exports.delete = async (req, res, next) => {
         blog.posts.forEach((post) => deletingPosts$.push(postService.delete(post._id)));
 
         await Promise.all(deletingPosts$);
-        await blogService.delete(req.params.username);
+        await blogService.delete(blog._id);
         await userService.delete(req.params.username);
 
         return res.json({});

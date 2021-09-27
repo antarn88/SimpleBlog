@@ -18,9 +18,12 @@ exports.create = async (req, res, next) => {
       return next(new createError.NotFound('Author not found'));
     }
 
+    const blogs = await blogService.findAll();
+    const blog = blogs.filter((b) => b.owner._id.toString() === req.body.author)[0];
+
     if (req.user && req.user.email && req.user.email === user.email) {
       const newPostFromDatabase = await postService.create(req.body);
-      await blogService.addPost(newPostFromDatabase.author.username, newPostFromDatabase._id);
+      await blogService.addPost(blog._id, newPostFromDatabase._id);
       return res.status(201).json(newPostFromDatabase);
     }
 
@@ -89,9 +92,12 @@ exports.delete = async (req, res, next) => {
         return next(new createError.Unauthorized());
       }
 
+      const blogs = await blogService.findAll();
+      const blog = blogs.filter((b) => b.owner._id.toString() === post.author._id.toString())[0];
+
       if ((req.user.email === post.author.email) || (user.role === 'admin' && post.visibility === 'public')) {
         await postService.delete(req.params.id);
-        await blogService.deletePost(post.author.username, req.params.id);
+        await blogService.deletePost(blog._id, req.params.id);
         return res.json({});
       }
     }

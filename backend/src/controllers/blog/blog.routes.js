@@ -8,6 +8,7 @@ const router = express.Router();
 router.post('/', (req, res, next) => controller.create(req, res, next));
 
 // READ
+router.get('/', (req, res, next) => controller.findAll(req, res, next));
 router.get('/:username', (req, res, next) => controller.findOne(req, res, next));
 
 // UPDATE

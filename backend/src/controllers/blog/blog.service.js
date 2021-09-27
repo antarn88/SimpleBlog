@@ -5,14 +5,13 @@ exports.create = (blogData) => {
   return blog.save();
 };
 
-exports.find = (username) => Blog.findOne({ username }).populate(['owner', 'posts']);
+exports.findAll = () => Blog.find().populate(['owner', 'posts']);
 
 // ADD NEW POST TO POSTLIST
-exports.addPost = (username, postId) => Blog.findOneAndUpdate(
-  { username }, { $addToSet: { posts: postId } }, { new: true },
-).populate(['owner', 'posts']);
+exports.addPost = (blogId, postId) => Blog.findByIdAndUpdate(blogId,
+  { $addToSet: { posts: postId } }, { new: true }).populate(['owner', 'posts']);
 
 // DELETE POST FROM POSTLIST
-exports.deletePost = (username, postId) => Blog.findOneAndUpdate({ username }, { $pull: { posts: postId } }, { new: true });
+exports.deletePost = (blogId, postId) => Blog.findByIdAndUpdate(blogId, { $pull: { posts: postId } }, { new: true });
 
-exports.delete = (username) => Blog.findOneAndDelete({ username });
+exports.delete = (blogId) => Blog.findByIdAndDelete(blogId);
