@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -9,6 +10,8 @@ import { ProfileComponent } from './page/profile/profile.component';
 import { AdminComponent } from './page/admin/admin.component';
 import { FooterComponent } from './widget/footer/footer.component';
 import { NavComponent } from './widget/nav/nav.component';
+import { NotfoundComponent } from './page/notfound/notfound.component';
+import { PostCardComponent } from './widget/post-card/post-card.component';
 
 @NgModule({
   declarations: [
@@ -18,11 +21,14 @@ import { NavComponent } from './widget/nav/nav.component';
     ProfileComponent,
     AdminComponent,
     FooterComponent,
-    NavComponent
+    NavComponent,
+    NotfoundComponent,
+    PostCardComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -2,6 +2,7 @@
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const express = require('express');
+const cors = require('cors');
 
 const logger = require('./config/logger');
 
@@ -36,6 +37,8 @@ mongoose.Promise = global.Promise;
 app.use(morgan('tiny', { stream: logger.stream }));
 
 app.use(express.json());
+
+app.use(cors());
 
 // Endpoints
 app.post('/api/login', authHandler.login);

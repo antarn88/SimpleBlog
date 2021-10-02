@@ -1,0 +1,54 @@
+{
+    "env": {
+      "browser": true,
+      "es2021": true
+    },
+    "extends": [
+      "airbnb-base",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": 12,
+      "sourceType": "module"
+    },
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "rules": {
+      "import/extensions": "off",
+      "import/no-unresolved": "off",
+      "import/prefer-default-export": "off",
+      "class-methods-use-this": "off",
+      "lines-between-class-members": "off",
+      "no-unused-vars": "off",
+      "no-useless-constructor": "off",
+      "no-empty-function": "off",
+      "comma-dangle": "warn",
+      "indent": "warn",
+      "space-in-parens": "warn",
+      "array-bracket-spacing": "warn",
+      "quotes": "warn",
+      "no-bitwise": "warn",
+      "no-underscore-dangle": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-inferrable-types": "warn",
+      "@typescript-eslint/no-empty-function": "warn",
+      "max-len": [
+        "warn",
+        {
+          "code": 130,
+          "tabWidth": 2
+        }
+      ]
+    },
+    "ignorePatterns": [
+      "/src/test.ts",
+      "/src/main.ts",
+      "/src/polyfills.ts",
+      "*.spec.ts",
+      "*.d.ts",
+      "*.html"
+    ]
+  }
