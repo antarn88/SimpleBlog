@@ -6,4 +6,5 @@ export class User {
   role = '';
   createdAt = new Date();
   updatedAt = new Date();
+  token = '';
 }

@@ -5,9 +5,11 @@
       <h2 class="my-5">Bejelentkezés</h2>
     </div>
 
-    <form>
-      <input type="email" id="email" class="" name="email" placeholder="email cím">
-      <input type="text" id="password" class="" name="login" placeholder="jelszó">
+    <p>{{ serverError }}</p>
+
+    <form #loginForm="ngForm" (ngSubmit)="onLogin(loginForm)">
+      <input type="email" id="email" class="" name="email" placeholder="email cím" [(ngModel)]="user.email">
+      <input type="text" id="password" class="" name="password" placeholder="jelszó" [(ngModel)]="user.password">
       <div id="formFooter">
         <a class="underlineHover" href="#">Elfelejtett jelszó</a>
       </div>

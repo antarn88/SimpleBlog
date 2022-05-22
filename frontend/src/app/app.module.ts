@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -12,6 +13,7 @@ import { FooterComponent } from './widget/footer/footer.component';
 import { NavComponent } from './widget/nav/nav.component';
 import { NotfoundComponent } from './page/notfound/notfound.component';
 import { PostCardComponent } from './widget/post-card/post-card.component';
+import { JwtInterceptorService } from './service/jwt-interceptor.service';
 
 @NgModule({
   declarations: [
@@ -23,14 +25,17 @@ import { PostCardComponent } from './widget/post-card/post-card.component';
     FooterComponent,
     NavComponent,
     NotfoundComponent,
-    PostCardComponent
+    PostCardComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule,
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptorService, multi: true },
+  ],
+  bootstrap: [AppComponent],
 })
 export class AppModule { }
